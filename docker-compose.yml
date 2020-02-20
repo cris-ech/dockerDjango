@@ -5,10 +5,22 @@ services:
     image: postgres:12.0-alpine
   web:
     build: .
-    command: [sh, -c, "cd app && python manage.py runserver 0.0.0.0:8000" ] 
+    command: python ./app/manage.py runserver 0.0.0.0:8000" 
     volumes:
       - ./app:/app
     ports:
       - "8000:8000"
+    links:
+      - db
+    depends_on:
+      - initialization
+  initialization:
+    build: .
+    command: [sh, -c, "python ./app/manage.py migrate && echo end" ]
+    volumes:
+      - ./app:/app
+    links:
+      - db
     depends_on:
       - db
+
